@@ -1,2 +1,2 @@
 ﻿# WorkWithList
-[![CI/CD](../../actions/workflows/android.yml/badge.svg?branch=main&event=workflow_dispatch)](../../actions/workflows/android.yml).
+ [![CI/CD](https://github.com/leaderpartiii/WorkWithList/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com//leaderpartiii/WorkWithList/actions/workflows/android.yml)
