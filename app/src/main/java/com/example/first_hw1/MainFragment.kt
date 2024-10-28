@@ -63,7 +63,7 @@ class MainFragment : Fragment() {
 @Composable
 fun MainWindow(amountOfElement: Int) {
     amountOfElements = remember { mutableIntStateOf(amountOfElement) }
-    var sizeOfRow: Int = 0
+    var sizeOfRow = 0
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -84,6 +84,14 @@ fun MainWindow(amountOfElement: Int) {
 
             Configuration.ORIENTATION_LANDSCAPE -> {
                 sizeOfRow = 4
+            }
+
+            Configuration.ORIENTATION_SQUARE -> {
+                //NOT SUPPORTED
+            }
+
+            Configuration.ORIENTATION_UNDEFINED -> {
+                //NOT SUPPORTED
             }
         }
         CommonState(sizeOfRow, innerPadding)
@@ -122,7 +130,7 @@ fun CommonState(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(count = amountOfElements!!.value % sizeOfRow + 1) { index ->
-                        SpecialText((amountOfColumns - 1) * sizeOfRow + index   )
+                        SpecialText((amountOfColumns - 1) * sizeOfRow + index)
                     }
                 }
             }
