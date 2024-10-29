@@ -1,6 +1,7 @@
 package com.example.first_hw1
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {

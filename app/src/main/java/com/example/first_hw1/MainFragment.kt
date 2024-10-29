@@ -2,7 +2,6 @@ package com.example.first_hw1
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,20 +42,14 @@ class MainFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                MainWindow((savedInstanceState?.get("amountOfElements") ?: 0) as Int)
+                MainWindow(savedInstanceState?.getInt("amountOfElements") ?: 0)
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("Debug", "It will be destroyed")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt("amountOfElements", (amountOfElements?.value ?: 0))
-        Log.d("Debug", "amountOfElements: ${amountOfElements?.value ?: 0}")
     }
 }
 
