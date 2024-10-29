@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Text
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,10 @@ import androidx.compose.ui.unit.dp
 
 var amountOfElements: MutableState<Int>? = null
 const val startIndex = 0
+const val amountToken: String = "amountOfElements"
+
+var allElements: MutableState<List<Int>> = mutableStateOf(listOf())
+var deletedElements: MutableState<List<Int>> = mutableStateOf(listOf())
 
 class MainFragment : Fragment() {
 
@@ -42,25 +48,34 @@ class MainFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                MainWindow(savedInstanceState?.getInt("amountOfElements") ?: 0)
+                MainWindow(savedInstanceState?.getInt(amountToken) ?: 0)
             }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt("amountOfElements", (amountOfElements?.value ?: 0))
+        outState.putInt(amountToken, (amountOfElements?.value ?: 0))
     }
 }
 
 @Composable
 fun MainWindow(amountOfElement: Int) {
     amountOfElements = remember { mutableIntStateOf(amountOfElement) }
+    allElements = remember { mutableStateOf((0..amountOfElement).toList()) }
     var sizeOfRow = 0
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                amountOfElements?.value = (amountOfElements?.value ?: 0) + 1
+                val elem: Int
+                if (deletedElements.value.isEmpty()) {
+                    amountOfElements?.value = (amountOfElements?.value ?: 0) + 1
+                    elem = (amountOfElements?.value ?: 0)
+                } else {
+                    elem = deletedElements.value.last()
+                    deletedElements.value -= elem
+                }
+                allElements.value += elem
             }) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -97,7 +112,9 @@ fun CommonState(
     sizeOfRow: Int,
     innerPadding: PaddingValues,
 ) {
-    val amountOfColumns = (amountOfElements!!.value) / sizeOfRow + 1
+    val unionElements = allElements.value
+    val amountOfColumns = unionElements.size / sizeOfRow + 1
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -113,7 +130,10 @@ fun CommonState(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(count = sizeOfRow) { index ->
-                        SpecialText(columnAmount * sizeOfRow + index + startIndex)
+                        val itemIndex = columnAmount * sizeOfRow + index
+                        if (itemIndex < unionElements.size) {
+                            SpecialText(unionElements[itemIndex])
+                        }
                     }
                 }
             }
@@ -122,8 +142,11 @@ fun CommonState(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(count = amountOfElements!!.value % sizeOfRow + 1) { index ->
-                        SpecialText((amountOfColumns - 1) * sizeOfRow + index + startIndex)
+                    items(count = unionElements.size % sizeOfRow + 1) { index ->
+                        val itemIndex = (amountOfColumns - 1) * sizeOfRow + index
+                        if (itemIndex < unionElements.size) {
+                            SpecialText(unionElements[itemIndex])
+                        }
                     }
                 }
             }
@@ -139,7 +162,11 @@ fun SpecialText(index: Int) {
             .background(
                 color = if (index % 2 == 0) Color.Red else Color.Blue,
                 shape = RoundedCornerShape(8.dp)
-            ),
+            )
+            .clickable {
+                deletedElements.value += index
+                allElements.value -= index
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(
