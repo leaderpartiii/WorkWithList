@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 
 
 var amountOfElements: MutableState<Int>? = null
+const val startIndex = 0
 
 class MainFragment : Fragment() {
 
@@ -80,11 +81,11 @@ fun MainWindow(amountOfElement: Int) {
             }
 
             Configuration.ORIENTATION_SQUARE -> {
-                //NOT SUPPORTED
+                sizeOfRow = 3
             }
 
             Configuration.ORIENTATION_UNDEFINED -> {
-                //NOT SUPPORTED
+                sizeOfRow = 3
             }
         }
         CommonState(sizeOfRow, innerPadding)
@@ -113,7 +114,7 @@ fun CommonState(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(count = sizeOfRow) { index ->
-                        SpecialText(columnAmount * sizeOfRow + index)
+                        SpecialText(columnAmount * sizeOfRow + index + startIndex)
                     }
                 }
             }
@@ -123,7 +124,7 @@ fun CommonState(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(count = amountOfElements!!.value % sizeOfRow + 1) { index ->
-                        SpecialText((amountOfColumns - 1) * sizeOfRow + index)
+                        SpecialText((amountOfColumns - 1) * sizeOfRow + index + startIndex)
                     }
                 }
             }
@@ -145,7 +146,7 @@ fun SpecialText(index: Int) {
         Text(
             text = index.toString(),
             color = Color.White,
-            fontSize = 20.sp
+            maxLines = 1
         )
     }
 }
