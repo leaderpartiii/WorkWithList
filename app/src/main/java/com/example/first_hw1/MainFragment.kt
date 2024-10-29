@@ -26,15 +26,14 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
 
-var amountOfElements: MutableState<Int>? = null
-const val startIndex = 0
-const val amountToken: String = "amountOfElements"
+var amountOfElements: MutableState<Int> = mutableIntStateOf(0)
 
 var allElements: MutableState<List<Int>> = mutableStateOf(listOf())
 var deletedElements: MutableState<List<Int>> = mutableStateOf(listOf())
@@ -48,29 +47,25 @@ class MainFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                MainWindow(savedInstanceState?.getInt(amountToken) ?: 0)
+                MainWindow(0)
             }
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(amountToken, (amountOfElements?.value ?: 0))
     }
 }
 
 @Composable
 fun MainWindow(amountOfElement: Int) {
-    amountOfElements = remember { mutableIntStateOf(amountOfElement) }
-    allElements = remember { mutableStateOf((0..amountOfElement).toList()) }
+    amountOfElements = rememberSaveable { mutableIntStateOf(amountOfElement) }
+    allElements = rememberSaveable { mutableStateOf((0..amountOfElement).toList()) }
+    deletedElements = rememberSaveable { mutableStateOf(listOf()) }
     var sizeOfRow = 0
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 val elem: Int
                 if (deletedElements.value.isEmpty()) {
-                    amountOfElements?.value = (amountOfElements?.value ?: 0) + 1
-                    elem = (amountOfElements?.value ?: 0)
+                    amountOfElements.value += 1
+                    elem = amountOfElements.value
                 } else {
                     elem = deletedElements.value.last()
                     deletedElements.value -= elem
